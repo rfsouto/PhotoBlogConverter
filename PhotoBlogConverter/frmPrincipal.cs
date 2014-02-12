@@ -51,6 +51,13 @@ namespace PhotoBlogConverter
             }
         }
 
+        private bool setError(String message)
+        {
+            MessageBox.Show(message);
+            return true;
+        }
+
+
         
     }
 }

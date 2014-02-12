@@ -5,23 +5,27 @@ using System.Text;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using System.IO;
+using System.Drawing.Drawing2D;
 
 namespace PhotoBlogConverter
 {
     class PhotoConverter
     {
-        private bool setError(String message)
+        PhotoConverterOptions options { get; set; }
+        private StringBuilder setError(String message)
         {
-            MessageBox.Show(message);
-            return true;
+            StringBuilder output = new StringBuilder();
+            output.AppendLine(message);
+            return output;
         }
 
         private bool processDirectory(String directory)
         {
             bool fail = false;
-            if (chBRecursion.Checked == true)
+            if (options.IncludeSubfolders == true)
             {
                 //Process all sub folders            
                 try
@@ -60,9 +64,9 @@ namespace PhotoBlogConverter
         {
             //For each selected file type in the source directory, do
             String[] fileEntries = Directory.GetFiles(inputDir, "*.*");
-            pbStatus.Minimum = 0;
-            pbStatus.Maximum = fileEntries.Length;
-            pbStatus.Step = 1;
+            options.pbTemp.Minimum = 0;
+            options.pbTemp.Maximum = fileEntries.Length;
+            options.pbTemp.Step = 1;
             int fileCount = 0;
             bool fail = false;
             foreach (String fileName in fileEntries)
@@ -72,7 +76,7 @@ namespace PhotoBlogConverter
                 String actualName = fileName.Replace(inputDir + "\\", "");
                 Image resizedImage;
                 fileCount += 1;
-                pbStatus.Value = fileCount;
+                options.pbTemp.Value = fileCount;
                 try
                 {
                     resizedImage = resizeImage(Double.Parse(tbOutputWidth.Text), Double.Parse(this.tbOutputHeight.Text), inputDir + "\\" + actualName);
@@ -83,7 +87,7 @@ namespace PhotoBlogConverter
                     setError(actualName + ": El archivo no tiene un formato de imagen válido. GDI+ no admite el formato de píxel del archivo. ");
                 }
             }
-            pbStatus.Value = 0;
+            options.pbTemp.Value = 0;
             return fail;
         }
 
@@ -156,5 +160,13 @@ namespace PhotoBlogConverter
             imgPhoto.Dispose();
             return bmPhoto;
         }
+    }
+
+    public class PhotoConverterOptions
+    {
+        public Boolean IncludeSubfolders { get; set; }
+        public String OutputPath { get; set; }
+        public String OriginPath { get; set; }
+        public System.Windows.Forms.ProgressBar pbTemp { get; set; }
     }
 }
