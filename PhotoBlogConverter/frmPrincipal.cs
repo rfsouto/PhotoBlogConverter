@@ -46,7 +46,16 @@ namespace PhotoBlogConverter
             if (errors == false)
             {
                 lblStatus.Text = "Starting Process...";
-                bool results = processDirectory(tbSourceFolder.Text);
+                PhotoConverterOptions ops = new PhotoConverterOptions();
+                ops.IncludeSubfolders = this.chBRecursion.Checked;
+                ops.MaxHeight = Double.Parse(this.tbOutputHeight.Text);
+                ops.MaxWidth = Double.Parse(this.tbOutputWidth.Text);
+                ops.OriginPath = this.tbSourceFolder.Text;
+                ops.OutputPath = this.txtSaveFolder.Text;
+                ops.pbTemp = this.pbStatus;
+                
+
+                bool results = PhotoConverter.processDirectory(tbSourceFolder.Text, ops);
                 lblStatus.Text = "Done";
             }
         }
